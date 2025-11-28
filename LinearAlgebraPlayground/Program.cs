@@ -23,8 +23,8 @@ namespace LinearAlgebraPlayground
             Console.WriteLine("\n--- Week 1: Foundations ---");
 
             // Real vectors (double)
-            var v = MathNet.Numerics.LinearAlgebra.Double.DenseVector.OfArray(new double[] { 1, 2, 3 });
-            var w = MathNet.Numerics.LinearAlgebra.Double.DenseVector.OfArray(new double[] { 4, 5, 6 });
+            var v = MathNet.Numerics.LinearAlgebra.Double.DenseVector.OfArray([1, 2, 3]);
+            var w = MathNet.Numerics.LinearAlgebra.Double.DenseVector.OfArray([4, 5, 6]);
 
             var vPlusW = v + w;
             var scalarTimesV = 2.0 * v;
@@ -35,8 +35,8 @@ namespace LinearAlgebraPlayground
             Console.WriteLine($"dot(v, w) = {dot_vw}");
 
             // Complex vectors
-            var vc = DenseVector.OfArray(new Complex[] { new Complex(1, 0), new Complex(0, 1) });
-            var wc = DenseVector.OfArray(new Complex[] { new Complex(2, -1), new Complex(3, 4) });
+            var vc = DenseVector.OfArray([new Complex(1, 0), new Complex(0, 1)]);
+            var wc = DenseVector.OfArray([new Complex(2, -1), new Complex(3, 4)]);
 
             var inner_vc_wc = vc.ConjugateDotProduct(wc);
             Console.WriteLine($"<v|w> (complex inner product) = {inner_vc_wc}");
@@ -46,7 +46,7 @@ namespace LinearAlgebraPlayground
                 {1, 2},
                 {3, 4}
             });
-            var x = MathNet.Numerics.LinearAlgebra.Double.DenseVector.OfArray(new double[] {1, 0});
+            var x = MathNet.Numerics.LinearAlgebra.Double.DenseVector.OfArray([1, 0]);
             Console.WriteLine($"A * x = {A * x}");
         }
 
@@ -56,8 +56,8 @@ namespace LinearAlgebraPlayground
             Console.WriteLine("\n--- Week 2: Quantum State Representation ---");
 
             // |0> = [1, 0]^T, |1> = [0, 1]^T (complex vectors)
-            var ket0 = DenseVector.OfArray(new Complex[] { Complex.One, Complex.Zero });
-            var ket1 = DenseVector.OfArray(new Complex[] { Complex.Zero, Complex.One });
+            var ket0 = DenseVector.OfArray([Complex.One, Complex.Zero]);
+            var ket1 = DenseVector.OfArray([Complex.Zero, Complex.One]);
 
             Console.WriteLine($"|0> = {ket0}");
             Console.WriteLine($"|1> = {ket1}");
@@ -102,8 +102,8 @@ namespace LinearAlgebraPlayground
             Console.WriteLine($"Is Z unitary? {IsUnitary(Z)}");
             Console.WriteLine($"Is H unitary? {IsUnitary(H)}");
 
-            var ket0 = DenseVector.OfArray(new Complex[] { Complex.One, Complex.Zero });
-            var ket1 = DenseVector.OfArray(new Complex[] { Complex.Zero, Complex.One });
+            var ket0 = DenseVector.OfArray([Complex.One, Complex.Zero]);
+            var ket1 = DenseVector.OfArray([Complex.Zero, Complex.One]);
 
             var result = H * ket0; // Hadamard creates superposition
             Console.WriteLine($"H|0> = {result}");
@@ -114,8 +114,8 @@ namespace LinearAlgebraPlayground
         {
             Console.WriteLine("\n--- Week 4: Multi-Qubit Systems ---");
 
-            var ket0 = DenseVector.OfArray(new Complex[] { Complex.One, Complex.Zero });
-            var ket1 = DenseVector.OfArray(new Complex[] { Complex.Zero, Complex.One });
+            var ket0 = DenseVector.OfArray([Complex.One, Complex.Zero]);
+            var ket1 = DenseVector.OfArray([Complex.Zero, Complex.One]);
 
             // |00> = |0> ⊗ |0>
             var ket00 = Tensor(ket0, ket0);
@@ -167,8 +167,8 @@ namespace LinearAlgebraPlayground
 
             // Eigen decomposition of Z (manual since it's simple)
             // Eigenvalues: +1 with eigenvector |0>, -1 with eigenvector |1>
-            var ket0 = DenseVector.OfArray(new Complex[] { Complex.One, Complex.Zero });
-            var ket1 = DenseVector.OfArray(new Complex[] { Complex.Zero, Complex.One });
+            var ket0 = DenseVector.OfArray([Complex.One, Complex.Zero]);
+            var ket1 = DenseVector.OfArray([Complex.Zero, Complex.One]);
 
             Console.WriteLine($"Z|0> = {Z * ket0}");
             Console.WriteLine($"Z|1> = {Z * ket1}");
