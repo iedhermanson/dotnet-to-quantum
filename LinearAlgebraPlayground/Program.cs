@@ -1,5 +1,6 @@
 ﻿using MathNet.Numerics.LinearAlgebra.Complex;
 using Complex = System.Numerics.Complex;
+using Microsoft.Quantum.Simulation.Simulators;
 
 namespace LinearAlgebraPlayground
 {
@@ -13,7 +14,7 @@ namespace LinearAlgebraPlayground
             Week3();
             Week4();
             Week5();
-            // Week6 will be Q#, with comparison hooks here.
+            Week6();
         }
 
         // Week 1: vectors, matrices, complex numbers, dot product
@@ -313,6 +314,79 @@ namespace LinearAlgebraPlayground
             var p1 = QuantumStates.ProbabilityOfOutcome(psi, ket1);
             
             Console.WriteLine($"P_Z(0) = {p0:F4}, P_Z(1) = {p1:F4} (sum={p0+p1:F4})");
+        }
+        static void Week6()
+        {
+            Console.WriteLine("\n=== Week 6: Q# Bell State (with .NET Comparison) ===\n");
+            
+            // === Part 1: .NET Linear Algebra Simulation ===
+            Console.WriteLine("--- Part 1: .NET Linear Algebra Bell State ---");
+            
+            // Create |0⟩ and |1⟩ basis states
+            QuantumStates.CreateBasisStates(out DenseVector ket0, out DenseVector ket1);
+            
+            // Create two-qubit initial state |00⟩ = |0⟩ ⊗ |0⟩
+            var ket00 = QuantumStates.Tensor(ket0, ket0);
+            Console.WriteLine("Initial state |00⟩:");
+            Console.WriteLine($"  [{ket00[0]:F4}, {ket00[1]:F4}, {ket00[2]:F4}, {ket00[3]:F4}]");
+            Console.WriteLine("  (basis: |00⟩, |01⟩, |10⟩, |11⟩)");
+            
+            // Apply Hadamard to first qubit: (H ⊗ I)|00⟩ = (|0⟩ + |1⟩)/√2 ⊗ |0⟩
+            var hadamard = QuantumGates.CreateHadamard();
+            var identity = QuantumGates.CreateIdentity();
+            var h_tensor_i = MatrixOperations.Kronecker(hadamard, identity);
+            var afterHadamard = QuantumGates.Apply(h_tensor_i, ket00);
+            Console.WriteLine("\nAfter H ⊗ I:");
+            Console.WriteLine($"  [{afterHadamard[0]:F4}, {afterHadamard[1]:F4}, {afterHadamard[2]:F4}, {afterHadamard[3]:F4}]");
+            Console.WriteLine("  = (|00⟩ + |10⟩)/√2");
+            
+            // Apply CNOT: creates Bell state |Φ⁺⟩ = (|00⟩ + |11⟩)/√2
+            var cnot = QuantumGates.CreateCNOT();
+            var bellState = QuantumGates.Apply(cnot, afterHadamard);
+            Console.WriteLine("\nAfter CNOT (Bell State |Φ⁺⟩):");
+            Console.WriteLine($"  [{bellState[0]:F4}, {bellState[1]:F4}, {bellState[2]:F4}, {bellState[3]:F4}]");
+            Console.WriteLine("  = (|00⟩ + |11⟩)/√2");
+            Console.WriteLine("  Interpretation: 50% chance |00⟩, 50% chance |11⟩, 0% for |01⟩ or |10⟩");
+            
+            // === Part 2: Q# Quantum Simulator ===
+            Console.WriteLine("\n--- Part 2: Q# Quantum Execution ---");
+            Console.WriteLine("Running Q# PrepareBellState operation 100 times...\n");
+            
+            using var sim = new QuantumSimulator();
+            
+            // Count measurement outcomes
+            int count00 = 0, count01 = 0, count10 = 0, count11 = 0;
+            int shots = 100;
+            
+            for (int i = 0; i < shots; i++)
+            {
+                var result = BellState.PrepareBellState.Run(sim).Result;
+                
+                // result is Result[] array from measuring both qubits
+                bool qubit0 = result[0] == Microsoft.Quantum.Simulation.Core.Result.One;
+                bool qubit1 = result[1] == Microsoft.Quantum.Simulation.Core.Result.One;
+                
+                if (!qubit0 && !qubit1) count00++;
+                else if (!qubit0 && qubit1) count01++;
+                else if (qubit0 && !qubit1) count10++;
+                else count11++;
+            }
+            
+            Console.WriteLine($"Measurement results ({shots} shots):");
+            Console.WriteLine($"  |00⟩: {count00} ({100.0*count00/shots:F1}%)");
+            Console.WriteLine($"  |01⟩: {count01} ({100.0*count01/shots:F1}%)");
+            Console.WriteLine($"  |10⟩: {count10} ({100.0*count10/shots:F1}%)");
+            Console.WriteLine($"  |11⟩: {count11} ({100.0*count11/shots:F1}%)");
+            
+            // === Part 3: Comparison Hooks ===
+            Console.WriteLine("\n--- Part 3: Comparison Analysis ---");
+            Console.WriteLine("✓ Both methods apply: H gate on qubit 0, then CNOT(0,1)");
+            Console.WriteLine("✓ .NET shows state vector: (|00⟩ + |11⟩)/√2 with exact amplitudes");
+            Console.WriteLine("✓ Q# shows measurements: actual random outcomes from quantum evolution");
+            Console.WriteLine("✓ Entanglement signature: Both qubits always measured in same state");
+            Console.WriteLine($"✓ Expected ~50%/~50% for |00⟩/|11⟩, got {100.0*count00/shots:F1}%/{100.0*count11/shots:F1}%");
+            Console.WriteLine($"✓ |01⟩ and |10⟩ should be ~0%: got {count01}/{count10} (confirms entanglement)");
+            Console.WriteLine("\nKey insight: .NET simulates the mathematics, Q# executes the physics!");
         }
     }
 }

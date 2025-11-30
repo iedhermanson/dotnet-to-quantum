@@ -10,6 +10,11 @@
   <ItemGroup>
     <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
     <PackageReference Include="MathNet.Numerics.FSharp" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Quantum.Sdk" Version="0.28.302812" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\qsharp\BellState\BellState.csproj" />
   </ItemGroup>
 
 </Project>
